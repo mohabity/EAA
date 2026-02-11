@@ -38,64 +38,6 @@ BEGIN
 END;
 $$;
 
--- Trigger : crée un profil automatiquement à l'inscription
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = ''
-AS $$
-BEGIN
-  INSERT INTO public.profiles (id, full_name, preferred_language)
-  VALUES (
-    NEW.id,
-    COALESCE(NEW.raw_user_meta_data ->> 'full_name', ''),
-    COALESCE((NEW.raw_user_meta_data ->> 'language')::public.language, 'fr')
-  );
-  RETURN NEW;
-END;
-$$;
-
--- Fonction RLS : retourne les IDs d'organisations du user courant
-CREATE OR REPLACE FUNCTION public.get_user_org_ids()
-RETURNS SETOF uuid
-LANGUAGE sql
-SECURITY DEFINER
-STABLE
-SET search_path = ''
-AS $$
-  SELECT organization_id
-  FROM public.organization_members
-  WHERE user_id = auth.uid();
-$$;
-
--- RPC : créer une organisation + membership owner atomiquement
-CREATE OR REPLACE FUNCTION public.create_organization(
-  org_name TEXT,
-  org_website TEXT DEFAULT NULL,
-  org_region region DEFAULT 'bruxelles',
-  org_plan plan_tier DEFAULT 'starter',
-  org_language language DEFAULT 'fr'
-)
-RETURNS uuid
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = ''
-AS $$
-DECLARE
-  new_org_id uuid;
-BEGIN
-  INSERT INTO public.organizations (name, website, region, plan, language)
-  VALUES (org_name, org_website, org_region, org_plan, org_language)
-  RETURNING id INTO new_org_id;
-
-  INSERT INTO public.organization_members (organization_id, user_id, role)
-  VALUES (new_org_id, auth.uid(), 'owner');
-
-  RETURN new_org_id;
-END;
-$$;
-
 -- ============================================================================
 -- 4. TABLES
 -- ============================================================================
@@ -204,7 +146,69 @@ CREATE TABLE public.declarations (
 );
 
 -- ============================================================================
--- 5. TRIGGERS
+-- 5. FONCTIONS DEPENDANTES DES TABLES
+-- ============================================================================
+
+-- Trigger : crée un profil automatiquement à l'inscription
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, preferred_language)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data ->> 'full_name', ''),
+    COALESCE((NEW.raw_user_meta_data ->> 'language')::public.language, 'fr')
+  );
+  RETURN NEW;
+END;
+$$;
+
+-- Fonction RLS : retourne les IDs d'organisations du user courant
+CREATE OR REPLACE FUNCTION public.get_user_org_ids()
+RETURNS SETOF uuid
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = ''
+AS $$
+  SELECT organization_id
+  FROM public.organization_members
+  WHERE user_id = auth.uid();
+$$;
+
+-- RPC : créer une organisation + membership owner atomiquement
+CREATE OR REPLACE FUNCTION public.create_organization(
+  org_name TEXT,
+  org_website TEXT DEFAULT NULL,
+  org_region region DEFAULT 'bruxelles',
+  org_plan plan_tier DEFAULT 'starter',
+  org_language language DEFAULT 'fr'
+)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  new_org_id uuid;
+BEGIN
+  INSERT INTO public.organizations (name, website, region, plan, language)
+  VALUES (org_name, org_website, org_region, org_plan, org_language)
+  RETURNING id INTO new_org_id;
+
+  INSERT INTO public.organization_members (organization_id, user_id, role)
+  VALUES (new_org_id, auth.uid(), 'owner');
+
+  RETURN new_org_id;
+END;
+$$;
+
+-- ============================================================================
+-- 6. TRIGGERS
 -- ============================================================================
 
 -- updated_at automatique sur les tables modifiables
@@ -232,7 +236,7 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ============================================================================
--- 6. INDEX
+-- 7. INDEX
 -- ============================================================================
 
 -- Index sur les clés étrangères
@@ -260,7 +264,7 @@ CREATE UNIQUE INDEX idx_declarations_one_published_per_lang
   WHERE status = 'published';
 
 -- ============================================================================
--- 7. ROW LEVEL SECURITY
+-- 8. ROW LEVEL SECURITY
 -- ============================================================================
 
 -- Activer RLS sur toutes les tables
@@ -283,7 +287,7 @@ ALTER TABLE public.violations FORCE ROW LEVEL SECURITY;
 ALTER TABLE public.declarations FORCE ROW LEVEL SECURITY;
 
 -- ---------------------------------------------------------------------------
--- 7.1 Profiles
+-- 8.1 Profiles
 -- ---------------------------------------------------------------------------
 
 CREATE POLICY "profiles_select" ON public.profiles
@@ -297,7 +301,7 @@ CREATE POLICY "profiles_update" ON public.profiles
   WITH CHECK (id = auth.uid());
 
 -- ---------------------------------------------------------------------------
--- 7.2 Organizations
+-- 8.2 Organizations
 -- ---------------------------------------------------------------------------
 
 CREATE POLICY "organizations_select" ON public.organizations
@@ -323,7 +327,7 @@ CREATE POLICY "organizations_delete" ON public.organizations
   );
 
 -- ---------------------------------------------------------------------------
--- 7.3 Organization Members
+-- 8.3 Organization Members
 -- ---------------------------------------------------------------------------
 
 CREATE POLICY "org_members_select" ON public.organization_members
@@ -355,7 +359,7 @@ CREATE POLICY "org_members_delete" ON public.organization_members
   );
 
 -- ---------------------------------------------------------------------------
--- 7.4 Sites
+-- 8.4 Sites
 -- ---------------------------------------------------------------------------
 
 CREATE POLICY "sites_select" ON public.sites
@@ -377,7 +381,7 @@ CREATE POLICY "sites_delete" ON public.sites
   );
 
 -- ---------------------------------------------------------------------------
--- 7.5 Audits
+-- 8.5 Audits
 -- ---------------------------------------------------------------------------
 
 CREATE POLICY "audits_select" ON public.audits
@@ -413,7 +417,7 @@ CREATE POLICY "audits_delete" ON public.audits
   );
 
 -- ---------------------------------------------------------------------------
--- 7.6 Pages
+-- 8.6 Pages
 -- ---------------------------------------------------------------------------
 
 CREATE POLICY "pages_select" ON public.pages
@@ -461,7 +465,7 @@ CREATE POLICY "pages_delete" ON public.pages
   );
 
 -- ---------------------------------------------------------------------------
--- 7.7 Violations (utilise audit_id dénormalisé)
+-- 8.7 Violations (utilise audit_id dénormalisé)
 -- ---------------------------------------------------------------------------
 
 CREATE POLICY "violations_select" ON public.violations
@@ -509,7 +513,7 @@ CREATE POLICY "violations_delete" ON public.violations
   );
 
 -- ---------------------------------------------------------------------------
--- 7.8 Declarations
+-- 8.8 Declarations
 -- ---------------------------------------------------------------------------
 
 CREATE POLICY "declarations_select" ON public.declarations
@@ -545,7 +549,7 @@ CREATE POLICY "declarations_delete" ON public.declarations
   );
 
 -- ============================================================================
--- 8. GRANTS
+-- 9. GRANTS
 -- ============================================================================
 
 -- Autoriser les rôles Supabase à utiliser les types enum
