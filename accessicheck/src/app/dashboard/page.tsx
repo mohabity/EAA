@@ -1,8 +1,16 @@
+"use client"
+
+import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
 import ScoreCircle from "@/components/dashboard/ScoreCircle"
 import ViolationCards from "@/components/dashboard/ViolationCards"
-import ScoreChart from "@/components/dashboard/ScoreChart"
 import QuickActions from "@/components/dashboard/QuickActions"
+
+// Recharts nécessite le DOM — chargement client uniquement
+const ScoreChart = dynamic(
+  () => import("@/components/dashboard/ScoreChart"),
+  { ssr: false }
+)
 
 // Données fictives pour la démo
 const MOCK_SCORE = 67
