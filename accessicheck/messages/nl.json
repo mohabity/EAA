@@ -32,5 +32,35 @@
     "mockName": "Marie Dupont",
     "mockEmail": "marie@accessicheck.be",
     "mockOrg": "TechBelgique SA"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "globalScore": "Globale score",
+    "scoreOutOf": "{score} op 100",
+    "scoreLabel": "Toegankelijkheidsscore: {score} op 100",
+    "conformity": {
+      "conforme": "Conform",
+      "partiel": "Gedeeltelijk conform",
+      "nonConforme": "Niet conform"
+    },
+    "violations": {
+      "critical": "Kritiek",
+      "major": "Belangrijk",
+      "minor": "Klein",
+      "label": "{count} overtreding(en) {level}"
+    },
+    "chart": {
+      "title": "Score-evolutie",
+      "description": "Evolutie van de toegankelijkheidsscore over de laatste 6 audits: {summary}",
+      "audit": "Audit {number}",
+      "score": "Score"
+    },
+    "actions": {
+      "title": "Snelle acties",
+      "newAudit": "Nieuwe audit starten",
+      "downloadDeclaration": "Verklaring downloaden",
+      "generateVpat": "VPAT-rapport genereren",
+      "lastAudit": "Laatste audit: {date}"
+    }
   }
 }
