@@ -1,8 +1,9 @@
-import { type NextRequest } from "next/server"
-import { updateSession } from "@/lib/supabase/middleware"
+import { NextResponse, type NextRequest } from "next/server"
+// import { updateSession } from "@/lib/supabase/middleware"
 
-export async function middleware(request: NextRequest) {
-  return await updateSession(request)
+// TEST DIAGNOSTIC : middleware désactivé pour isoler la cause du 404
+export async function middleware(_request: NextRequest) {
+  return NextResponse.next()
 }
 
 export const config = {
