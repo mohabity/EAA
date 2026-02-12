@@ -1,29 +1,28 @@
-import type { Metadata } from "next"
-import { NextIntlClientProvider } from "next-intl"
-import { getLocale, getMessages } from "next-intl/server"
-import "./globals.css"
-import AppLayout from "@/components/layout/AppLayout"
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
 
 export const metadata: Metadata = {
   title: "AccessiCheck",
-  description: "AccessiCheck — Audit d'accessibilité web EAA",
-}
+  description: "Audit d'accessibilité web — European Accessibility Act",
+};
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-  const locale = await getLocale()
-  const messages = await getMessages()
-
   return (
-    <html lang={locale}>
-      <body className="antialiased">
-        <NextIntlClientProvider messages={messages}>
-          <AppLayout>{children}</AppLayout>
-        </NextIntlClientProvider>
+    <html lang="fr">
+      <body className={`${geistSans.variable} font-sans antialiased`}>
+        {children}
       </body>
     </html>
-  )
+  );
 }

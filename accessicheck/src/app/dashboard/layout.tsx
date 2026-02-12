@@ -1,12 +1,12 @@
-import Sidebar from "./Sidebar"
-import Header from "./Header"
-import SkipNavLink from "./SkipNavLink"
+import Sidebar from "@/components/layout/Sidebar";
+import Header from "@/components/layout/Header";
+import SkipNavLink from "@/components/layout/SkipNavLink";
 
-interface AppLayoutProps {
-  children: React.ReactNode
-}
-
-export default function AppLayout({ children }: AppLayoutProps) {
+export default function DashboardLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <div className="flex min-h-screen bg-background">
       <SkipNavLink />
@@ -18,5 +18,5 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </main>
       </div>
     </div>
-  )
+  );
 }

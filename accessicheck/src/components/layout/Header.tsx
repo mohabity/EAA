@@ -1,18 +1,13 @@
-import { useTranslations } from "next-intl"
-import Link from "next/link"
-import Breadcrumbs from "./Breadcrumbs"
-import ProfileMenu from "./ProfileMenu"
+import Link from "next/link";
+import { Scan } from "lucide-react";
+import ProfileMenu from "./ProfileMenu";
 
 export default function Header() {
-  const t = useTranslations("header")
-  const tBreadcrumbs = useTranslations("breadcrumbs")
-
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-6 bg-background border-b border-foreground/10">
-      <Breadcrumbs
-        items={[{ label: tBreadcrumbs("home"), href: "/dashboard" }]}
-      />
-
+    <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200">
+      <h2 className="text-sm font-medium text-foreground/60">
+        Tableau de bord
+      </h2>
       <div className="flex items-center gap-4">
         <Link
           href="/audits/new"
@@ -20,10 +15,11 @@ export default function Header() {
             hover:bg-accent-hover transition-colors
             focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
         >
-          {t("launchAudit")}
+          <Scan className="h-4 w-4" aria-hidden="true" />
+          Lancer un audit
         </Link>
         <ProfileMenu />
       </div>
     </header>
-  )
+  );
 }

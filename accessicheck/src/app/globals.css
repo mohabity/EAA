@@ -1,40 +1,20 @@
-@import "tailwindcss";
-
-:root {
-  --background: #FAFAF8;
-  --foreground: #1E293B;
-  --sidebar-bg: #0F172A;
-  --sidebar-text: #94A3B8;
-  --sidebar-text-active: #FFFFFF;
-  --accent: #047857;
-  --accent-hover: #065F46;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-sidebar-bg: var(--sidebar-bg);
-  --color-sidebar-text: var(--sidebar-text);
-  --color-sidebar-text-active: var(--sidebar-text-active);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  color: #1E293B;
+  background: #FAFAF8;
 }
 
-/* Lien "Aller au contenu principal" — visible uniquement au focus clavier */
+/* Lien d'accessibilité "Aller au contenu principal" — visible uniquement au focus clavier */
 .skip-nav-link {
   position: absolute;
   top: -100%;
   left: 1rem;
   z-index: 100;
   padding: 0.75rem 1.5rem;
-  background: var(--accent);
+  background: #047857;
   color: #FFFFFF;
   border-radius: 0 0 0.5rem 0.5rem;
   font-weight: 600;
@@ -44,4 +24,6 @@ body {
 
 .skip-nav-link:focus {
   top: 0;
+  outline: 2px solid #047857;
+  outline-offset: 2px;
 }

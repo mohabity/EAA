@@ -1,109 +1,75 @@
-"use client"
-
-import { useTranslations } from "next-intl"
-
 interface ScoreCircleProps {
-  score: number
-}
-
-// Détermine la couleur et le statut de conformité selon le score
-function getScoreConfig(score: number) {
-  if (score < 40) {
-    return {
-      color: "#B91C1C",
-      badgeKey: "nonConforme" as const,
-      badgeBg: "bg-red-100 text-red-800 border-red-200",
-    }
-  }
-  if (score <= 70) {
-    return {
-      color: "#B45309",
-      badgeKey: "partiel" as const,
-      badgeBg: "bg-amber-100 text-amber-800 border-amber-200",
-    }
-  }
-  return {
-    color: "#047857",
-    badgeKey: "conforme" as const,
-    badgeBg: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  }
+  score: number;
 }
 
 export default function ScoreCircle({ score }: ScoreCircleProps) {
-  const t = useTranslations("dashboard")
+  // Couleur selon le score
+  const color = score > 70 ? "#047857" : score >= 40 ? "#B45309" : "#B91C1C";
 
-  const radius = 54
-  const circumference = 2 * Math.PI * radius
-  const offset = circumference * (1 - score / 100)
-  const { color, badgeKey, badgeBg } = getScoreConfig(score)
+  // Calcul du cercle SVG (rayon 50, périmètre ~314)
+  const radius = 50;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-xl border border-foreground/10 bg-white p-6 shadow-sm">
-      <p className="text-sm font-medium text-foreground/60">
-        {t("globalScore")}
-      </p>
-
-      <svg
-        width={120}
-        height={120}
-        viewBox="0 0 120 120"
-        role="img"
-        aria-label={t("scoreLabel", { score })}
-      >
-        {/* Cercle de fond (piste) */}
-        <circle
-          cx={60}
-          cy={60}
-          r={radius}
-          fill="none"
-          stroke="#E2E8F0"
-          strokeWidth={8}
-        />
-        {/* Cercle de progression */}
-        <circle
-          cx={60}
-          cy={60}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth={8}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          transform="rotate(-90 60 60)"
-          style={{ transition: "stroke-dashoffset 0.8s ease-in-out" }}
-        />
-        {/* Score au centre */}
-        <text
-          x={60}
-          y={55}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize={28}
-          fontWeight={700}
-          fill="#1E293B"
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <h2 className="text-sm font-medium text-foreground/60 mb-4">
+        Score global
+      </h2>
+      <div className="flex justify-center">
+        <svg
+          width="140"
+          height="140"
+          viewBox="0 0 120 120"
+          role="img"
+          aria-label={`Score d'accessibilité : ${score} sur 100`}
         >
-          {score}
-        </text>
-        <text
-          x={60}
-          y={78}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize={12}
-          fill="#64748B"
-        >
-          / 100
-        </text>
-      </svg>
-
-      {/* Badge de conformité */}
-      <span
-        role="status"
-        className={`inline-block rounded-full border px-3 py-1 text-xs font-semibold ${badgeBg}`}
-      >
-        {t(`conformity.${badgeKey}`)}
-      </span>
+          {/* Cercle de fond */}
+          <circle
+            cx="60"
+            cy="60"
+            r={radius}
+            fill="none"
+            stroke="#E2E8F0"
+            strokeWidth="10"
+          />
+          {/* Cercle de progression */}
+          <circle
+            cx="60"
+            cy="60"
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            transform="rotate(-90 60 60)"
+            style={{ transition: "stroke-dashoffset 0.6s ease" }}
+          />
+          {/* Score au centre */}
+          <text
+            x="60"
+            y="55"
+            textAnchor="middle"
+            className="text-3xl font-bold"
+            fill={color}
+            fontSize="28"
+            fontWeight="bold"
+          >
+            {score}
+          </text>
+          <text
+            x="60"
+            y="75"
+            textAnchor="middle"
+            fill="#94A3B8"
+            fontSize="12"
+          >
+            / 100
+          </text>
+        </svg>
+      </div>
     </div>
-  )
+  );
 }
