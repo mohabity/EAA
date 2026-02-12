@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "sites": "Mijn Sites",
+    "audits": "Audits",
+    "documents": "Documenten",
+    "subsidies": "Subsidies"
+  },
+  "header": {
+    "launchAudit": "Audit starten",
+    "profile": "Profiel",
+    "settings": "Instellingen",
+    "logout": "Uitloggen"
+  },
+  "breadcrumbs": {
+    "home": "Home"
+  },
+  "language": {
+    "switch": "Taal wijzigen",
+    "fr": "FR",
+    "nl": "NL",
+    "currentLanguage": "Huidige taal: Nederlands"
+  },
+  "accessibility": {
+    "skipToContent": "Ga naar hoofdinhoud",
+    "mainNavigation": "Hoofdnavigatie",
+    "sidebarToggle": "Zijmenu openen/sluiten",
+    "profileMenu": "Profielmenu",
+    "breadcrumbNav": "Kruimelpad"
+  },
+  "profile": {
+    "mockName": "Marie Dupont",
+    "mockEmail": "marie@accessicheck.be",
+    "mockOrg": "TechBelgique SA"
+  }
+}
